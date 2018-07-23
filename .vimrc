@@ -6,28 +6,31 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-call plug#begin('~/vim/plugged')  
-  Plug('roosta/vim-srcery') 
-  Plug('scrooloose/nerdtree') 
-  Plug 'scrooloose/syntastic' 
-  Plug 'bling/vim-airline' 
-  Plug 'easymotion/vim-easymotion' 
-  Plug 'valloric/youcompleteme' 
-  Plug 'junegunn/fzf' 
-  "Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } 
-  Plug 'godlygeek/tabular' 
-  Plug 'haya14busa/incsearch.vim' 
-  Plug 'ajmwagar/vim-deus' 
-  Plug 'suoto/vim-hdl'  
+
+call plug#begin('~/vim/plugged')
+
+  Plug('roosta/vim-srcery')
+  Plug('scrooloose/nerdtree')
+  Plug 'scrooloose/syntastic'
+  Plug 'bling/vim-airline'
+  Plug 'easymotion/vim-easymotion'
+  Plug 'valloric/youcompleteme'
+  " Plug 'junegunn/fzf'
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  Plug 'godlygeek/tabular'
+  Plug 'haya14busa/incsearch.vim'
+  Plug 'haya14busa/incsearch-easymotion.vim'
+  Plug 'suoto/vim-hdl'
+  Plug 'majutsushi/tagbar'
+  Plug 'xolox/vim-easytags'
+  Plug 'xolox/vim-misc'
+
 call plug#end()
 
-"set t_Co=256
-"colorscheme deus
 colorscheme srcery
 
 noremap <C-s> :w<CR>
 noremap <C-q> :q<CR>
-noremap <f> <Plug>(easymotion-prefix)
 
 " call fzf#run({'sink': 'tabedit'})
 
@@ -42,16 +45,33 @@ set expandtab
 " Custom keymap
 imap <Caps> <Esc>
 nmap <Caps> <Esc>
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
+cmap w!! w !sudo tee > /dev/null %
+
+" ----------------------------------------------------------------------------
+" Incsearch
+"
+"map /  <Plug>(incsearch-forward)
+"map ?  <Plug>(incsearch-backward)
+"map g/ <Plug>(incsearch-stay)
+
+function! s:incsearch_config(...) abort
+    return incsearch#util#deepextend(deepcopy({
+      \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
+      \   'keymap': {
+      \     "\<CR>": '<Over>(easymotion)'
+      \   },
+      \   'is_expr': 0
+      \ }), get(a:, 1, {}))
+endfunction
+
+noremap <silent><expr> /  incsearch#go(<SID>incsearch_config())
+noremap <silent><expr> ?  incsearch#go(<SID>incsearch_config({'command': '?'}))
+noremap <silent><expr> g/ incsearch#go(<SID>incsearch_config({'is_stay': 1}))
+" ----------------------------------------------------------------------------
 
 " NERDTree
-" map <T> :NERDTree
 nmap <S-t> :NERDTree<CR>
 set encoding=utf-8
-
-set guifont=Monaco
 
 " SYNTASTIC
 set statusline+=%#warningmsg#
@@ -65,6 +85,46 @@ let g:syntastic_check_on_wq = 0
 
 " EasyMotion
 map <S-p> <Plug>(easymotion-prefix)
+nmap s <Plug>(easymotion-bd-w)
+nmap <S-S> <Plug>(easymotion-sn)
 
-cmap w!! w !sudo tee > /dev/null %
+let g:syntastic_vhdl_checkers = ['vimhdl']
+
+
+" TAGBAR
+
+nmap <F8> :TagbarToggle<CR>
+let g:airline#extensions#tagbar#enabled = 0
+let g:tagbar_type_vhdl = {
+    \ 'ctagstype': 'vhdl',
+    \ 'kinds' : [
+      \'d:prototypes',
+      \'b:package bodies',
+      \'e:entities',
+      \'a:architectures',
+      \'t:types',
+      \'p:processes',
+      \'f:functions',
+      \'r:procedures',
+      \'c:constants',
+      \'T:subtypes',
+      \'r:records',
+      \'C:components',
+      \'P:packages',
+      \'l:locals',
+      \'s:signals'
+  \]
+\}
+
+" EASYTAGS
+" Doc : :UpdateTags -R .
+let g:easytags_languages = {
+      \ 'vhdl': {
+        \ 'cmd': 'ctags -R .',
+        \ 'recurse_flag': ''
+        \   }
+        \}
+let g:easytags_file = 'vimtags'
+nnoremap <S-T> <C-w><C-]><C-w>T
+
 
