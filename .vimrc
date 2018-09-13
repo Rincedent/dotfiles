@@ -19,7 +19,7 @@ call plug#begin('~/vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'godlygeek/tabular'
   Plug 'haya14busa/incsearch.vim'
-  Plug 'haya14busa/incsearch-easymotion.vim'
+  " Plug 'haya14busa/incsearch-easymotion.vim' " Breaks the d/[Char] function
   Plug 'suoto/vim-hdl'
   Plug 'majutsushi/tagbar'
   Plug 'xolox/vim-easytags'
