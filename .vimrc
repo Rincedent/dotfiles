@@ -7,7 +7,7 @@ endif
 call plug#begin('~/vim/plugged')
 
   Plug 'roosta/vim-srcery'
-  Plug 'scrooloose/syntastic'
+  Plug 'w0rp/ale'
   Plug 'bling/vim-airline'
   Plug 'valloric/youcompleteme', { 'do': './install.py' } 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -16,27 +16,32 @@ call plug#begin('~/vim/plugged')
 call plug#end()
 
 colorscheme srcery
+
+set nocompatible
+
+" autoloads plugins when opening filetypes
+filetype plugin on
+
+syntax on
+set modelines=0
 set number
-set sc
-
 set cc=80
-
 set ts=2
 set sw=2
 set sts=2
 set expandtab
+set sc
+set nohlsearch
 
 cmap w!! w !sudo tee > /dev/null %
 
 set encoding=utf-8
 
-" SYNTASTIC
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-
+nnoremap <C-P> :FZF <CR>
+nnoremap <F2> :!ctags -R . <CR>
+nnoremap <F3> :!ghdl -i --std=08 $(find * -iname *.vhd) <CR>
+ 
+let g:lt_location_list_toggle_map = '<F5>'
+let g:lt_quickfix_list_toggle_map = '<F6>'
+nnoremap <F11> :lnext <CR>
+ nnoremap <F10> :lprev <CR>
